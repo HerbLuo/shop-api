@@ -16,7 +16,7 @@ https://github.com/HerbLuo/shop-api.git.
 2. create a new database and run the sql file in `/database/shop(latest).sql` 
 (all the file is the full version).
 3. In `/src/main/resources/db.example.properties`, 
-modify the db user information to yourself's
+modify the db user information to yourself's (and rename to `db.properties`, not needed)
 4. Add a new run/debug config for tomcat.
 5. Run it.
 
