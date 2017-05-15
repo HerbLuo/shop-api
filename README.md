@@ -2,15 +2,15 @@
 
 restful apis for shop-native, shop-ui.
 
-###Setup By Intellij IDEA
+### Setup By Intellij IDEA
 
-#####Requirement
+##### Requirement
 1. __Java8__ and above
 2. __MySQL 5.7.2__ and above (support multiple triggers features)
 3. __Tomcat__ (version unknown, 8.5 for me)
 4. __Maven__ (intellij idea build-in it)
 
-#####Steps:
+##### Steps:
 1. New project from version control: Github
 https://github.com/HerbLuo/shop-api.git.
 2. create a new database and run the sql file in `/database/shop(latest).sql` 
@@ -20,7 +20,7 @@ modify the db user information to yourself's
 4. Add a new run/debug config for tomcat.
 5. Run it.
 
-#####Test:
+##### Test:
 1. goto `http://localhost:8080/item/?itemIds=1&itemIds=2&itemIds=5`,
 2. if success, server will return the json array as follows
 ```json
@@ -34,4 +34,4 @@ modify the db user information to yourself's
 }]
 ```
 
-###License MIT
+### License MIT
