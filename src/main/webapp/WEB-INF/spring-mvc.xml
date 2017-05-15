@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/cache
+       http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+
+    <!-- 自动扫描并开启注解 -->
+    <context:component-scan base-package="cn.cloudself"/>
+    <context:annotation-config/>
+    <!-- 提供数据绑定（类型转换Object to String）支持 @NumberFormatannotation @DateTimeFormat @Valid @ResponseBody @RequestBody -->
+    <mvc:annotation-driven/>
+    <!-- 配置数据源 --><!-- 导入资源文件 -->
+    <context:property-placeholder location="classpath:*.properties"/>
+
+    <!-- 已弃用，因历史遗留原因，保留该方法 -->
+    <!-- 新的日志系统应使用slf4j -->
+    <!-- 实现log4j的bean，便于自动注入 -->
+    <bean name="logger" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="org.apache.log4j.Logger"/>
+        <property name="targetMethod" value="getLogger"/>
+        <property name="arguments" value="cn.cloudself"/>
+    </bean>
+
+    <!-- Slf4J，单例的 -->
+    <bean name="log" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="org.slf4j.LoggerFactory"/>
+        <property name="targetMethod" value="getLogger"/>
+        <property name="arguments" value="cn.cloudself"/>
+    </bean>
+
+
+    <!-- 拦截器 --><!-- 这个是拦截URL请求的 -->
+    <!-- 该Spring mvc 在web.xml中的定义可知，由该mvc控制的全是.do结尾的请求，所以不必设置 不拦截静态资源 -->
+    <mvc:interceptors>
+        <!-- 请求日志记录 -->
+        <!-- 保存请求的详细信息 --><!-- 未配置mvc:mapping 代表拦截所有请求 -->
+        <bean class="cn.cloudself.components.interceptor.RequestLoggerInterceptor"/>
+    </mvc:interceptors>
+
+
+    <!-- 切面拦截 AOP --><!-- 这个是拦截方法的 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <!--&lt;!&ndash; 启用MVC注解 &ndash;&gt;-->
+    <!--&lt;!&ndash; 指定Sping组件扫描的基本包路径 &ndash;&gt;-->
+    <!--<context:component-scan base-package="cn.cloudself.controller">-->
+    <!--<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>-->
+    <!--</context:component-scan>-->
+
+
+    <!-- 启用缓存注解 --><!-- with ehcache -->
+    <cache:annotation-driven cache-manager="cacheManager"/>
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+          p:cache-manager-ref="ehcache"/>
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+          p:configLocation="/WEB-INF/ehcache.xml"
+          p:shared="true"/>
+
+
+</beans>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd
+       http://www.springframework.org/schema/security/oauth2
+       http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
+
+    <!-- spring security oauth2 -->
+    <!-- TODO where is the north? this file could only look-look -->
+
+    <!-- step1: create a filter of url pattern /oauth/token,
+                the filter check the username and password which is from url-paramers or form-data in a http request
+                name of the filter is clientCredentialsTokenEndpointFilter -->
+
+    <!-- step2: create client details service and user details service, than bind the service to the filter in step1 -->
+
+    <!-- the token service is builded a lot, than we config the recourse service -->
+
+    <!-- step3: create some filters for the resource which need to be proceted,
+                and config the token service to check the enable of token -->
+
+    <!-- step4: create token server and resource server -->
+
+    <!-- step5: four basic bean, they are:
+                success entry point(both needed),
+                denied handler(both needed),
+                user approval handler(token),
+                access decision(resource) -->
+
+
+    <!--       -->
+    <!-- step1 -->
+    <!--       -->
+
+    <!-- 拦截 token 获取Api， 验证客户端和用户密码，(该实现弱化了客户端认证)
+         success: basicAuthEntryPoint
+         fail: oauthAccessDeniedHandler-->
+    <http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager"
+          xmlns="http://www.springframework.org/schema/security">
+        <intercept-url pattern="/oauth/token" access="isFullyAuthenticated()"/>
+        <anonymous enabled="false"/>
+        <http-basic entry-point-ref="basicAuthEntryPoint"/>
+        <custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER"/>
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+        <csrf disabled="true"/>
+    </http>
+
+    <!-- 获取token前，先进行客户端身份认证 -->
+    <bean id="clientCredentialsTokenEndpointFilter"
+          class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+        <property name="authenticationManager" ref="clientAuthenticationManager"/>
+    </bean>
+
+    <!--       -->
+    <!-- step2 -->
+    <!--       -->
+
+    <!-- 认证管理器 -->
+    <!-- This is simple authentication manager -->
+    <authentication-manager id="userAuthenticationManager"
+                            xmlns="http://www.springframework.org/schema/security">
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="dataSource"/>
+            <password-encoder ref="passwordEncoder"/>
+        </authentication-provider>
+    </authentication-manager>
+
+    <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+        <constructor-arg value="256"/>
+    </bean>
+
+    <!-- client details service -->
+    <bean id="clientDetailsUserService"
+          class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
+        <constructor-arg ref="clientDetails"/>
+    </bean>
+    <!--
+         clientId：（必须的）用来标识客户的Id。
+         secret：（需要值得信任的客户端）客户端安全码，如果有的话。
+         scope：用来限制客户端的访问范围，如果为空（默认）的话，那么客户端拥有全部的访问范围。
+         authorizedGrantTypes：此客户端可以使用的授权类型，默认为空。
+         authorities：此客户端可以使用的权限（基于Spring Security authorities）。
+     -->
+    <oauth:client-details-service id="clientDetails">
+        <oauth:client client-id="any"
+                      secret="s_any"
+                      authorized-grant-types="password,authorization_code,refresh_token,implicit"
+                      scope="read,write,trust"
+                      authorities="USER"
+        />
+    </oauth:client-details-service>
+
+    <!-- bind -->
+    <security:authentication-manager id="clientAuthenticationManager">
+        <security:authentication-provider user-service-ref="clientDetailsUserService"/><!-- 可自定义UserService获得增强功能 -->
+    </security:authentication-manager>
+
+    <!--       -->
+    <!-- step3 -->
+    <!--       -->
+
+    <!-- 受保护的url -->
+    <!-- This is where we tells spring security what URL should be protected and what roles have access to them -->
+    <http pattern="/**/user/**" create-session="never"
+          entry-point-ref="oauthAuthEntryPoint" access-decision-manager-ref="accessDecisionManager"
+          xmlns="http://www.springframework.org/schema/security">
+        <anonymous enabled="false"/>
+        <intercept-url pattern="/**/user/**" access="hasRole('USER')"/>
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+        <csrf disabled="true"/>
+    </http>
+    <http pattern="/**/optionalUser/**" create-session="never"
+          entry-point-ref="oauthAuthEntryPoint" access-decision-manager-ref="optionalUserAccessDecisionManager"
+          xmlns="http://www.springframework.org/schema/security">
+        <anonymous enabled="true"/>
+        <intercept-url pattern="/**/optionalUser/**" access="permitAll()"/>
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+        <csrf disabled="true"/>
+    </http>
+    <http pattern="/**/seller/**" create-session="never"
+          entry-point-ref="oauthAuthEntryPoint" access-decision-manager-ref="accessDecisionManager"
+          xmlns="http://www.springframework.org/schema/security">
+        <anonymous enabled="false"/>
+        <intercept-url pattern="/**/seller/**" access="hasRole('SELLER')"/>
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+        <csrf disabled="true"/>
+    </http>
+
+
+    <!-- token服务 -->
+    <!-- This is where we defined token based configurations, token validity and other things -->
+    <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+        <property name="tokenStore" ref="tokenStore"/>
+        <property name="supportRefreshToken" value="true"/>
+        <property name="accessTokenValiditySeconds" value="60"/><!-- token有效期，单位秒，开发时设置为1分钟，发布后可将其增加为10分钟以上 -->
+        <property name="refreshTokenValiditySeconds" value="604800"/><!-- 7天 -->
+        <property name="clientDetailsService" ref="clientDetails"/>
+    </bean>
+    <!-- 预定义的token store，这些token现在存储在内存里， 我们可以在此自定义它。如果使用jdbc， 注意导入依赖spring jdbc-->
+    <!-- This defined token store, we have used inmemory tokenstore for now but this can be changed to a user defined one -->
+    <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore"/>
+
+
+    <!--       -->
+    <!-- step4 -->
+    <!--       -->
+
+    <!-- 授权服务 -->
+    <oauth:authorization-server
+            client-details-service-ref="clientDetails" token-services-ref="tokenServices"
+            user-approval-handler-ref="userApprovalHandler">
+        <oauth:authorization-code/>
+        <oauth:implicit/>
+        <oauth:refresh-token/>
+        <oauth:client-credentials/>
+        <oauth:password authentication-manager-ref="userAuthenticationManager"/>
+    </oauth:authorization-server>
+
+    <!-- 资源服务 -->
+    <oauth:resource-server id="resourceServerFilter" resource-id="userresource" token-services-ref="tokenServices"/>
+
+
+    <!--       -->
+    <!-- step5 -->
+    <!--       -->
+
+    <!-- 未通过认证的处理 -->
+    <bean id="oauthAuthEntryPoint"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+        <property name="realmName" value="shop"/>
+    </bean>
+
+    <!-- 未通过认证，建议客户端使用basic方式进行认证 -->
+    <bean id="basicAuthEntryPoint"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+        <property name="realmName" value="shop/client"/><!-- 火狐浏览器会提示该信息 -->
+        <property name="typeName" value="Basic"/>
+    </bean>
+
+    <!-- 拒绝授权处理器 -->
+    <bean id="oauthAccessDeniedHandler"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler"/>
+
+    <bean id="userApprovalHandler"
+          class="org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler"/>
+
+    <!-- 决策管理器，决定是否有权限访问 -->
+    <!-- UnanimousBased 必须全票通过 -->
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased">
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter"/>
+
+                <bean class="org.springframework.security.access.vote.RoleVoter"/>
+                <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+                <!--<bean class="org.springframework.security.web.access.expression.WebExpressionVoter"/>-->
+                <bean class="cn.cloudself.components.voter.UserVoter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="optionalUserAccessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased">
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter"/>
+
+                <!--<bean class="org.springframework.security.access.vote.RoleVoter"/>-->
+                <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+                <!--<bean class="org.springframework.security.web.access.expression.WebExpressionVoter"/>-->
+                <bean class="cn.cloudself.components.voter.UserVoter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+
+    <!--启用注解。针对方法进行拦截，于是乎不用配置url拦截了 -->
+    <security:global-method-security pre-post-annotations="enabled" proxy-target-class="true">
+        <!-- You could also wire in the expression handler up at the layer of the http filters.
+             See https://jira.springsource.org/browse/SEC-1452 -->
+        <security:expression-handler ref="oauthExpressionHandler"/>
+    </security:global-method-security>
+    <oauth:expression-handler id="oauthExpressionHandler"/>
+
+</beans>
