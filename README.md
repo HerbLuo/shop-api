@@ -1,6 +1,7 @@
 # shop-api
 
-> restful apis for shop-native, shop-ui.
+> restful apis for [shop-native](https://github.com/HerbLuo/shop-native), 
+shop-ui.
 
 ### Setup By Intellij IDEA
 
