@@ -85,7 +85,7 @@ public class ItemController {
      * 得到商品评论
      *
      * @param id        商品id
-     * @param page      .
+     * @param page      从0开始计
      * @param aPageSize .
      * @return 评论s
      */

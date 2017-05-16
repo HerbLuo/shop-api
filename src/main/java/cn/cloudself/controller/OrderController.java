@@ -41,6 +41,8 @@ public class OrderController {
 
     /**
      * 查询历史订单
+     *
+     * @param page 从0开始计
      */
     @RequestMapping(value = "/user/{username}/page/{page}/apagesize/{aPageSize}/", method = RequestMethod.GET)
     public Page<OrderEntity> getOrderByUser(@PathVariable("username") String username,
