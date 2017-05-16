@@ -61,7 +61,7 @@ public class ApplicationNativeController {
      * 获取极有家
      * @param page start from 0
      */
-    @RequestMapping(value = "/jiyoujia/page/{page}/apagesize/{aPageSize}", method = RequestMethod.GET)
+    @RequestMapping(value = "/jiyoujia/page/{page}/apagesize/{aPageSize}/", method = RequestMethod.GET)
     public Page<AppJiyoujiaEntity> getJiyoujia(@PathVariable("page") Integer page,
                                                @PathVariable("aPageSize") Integer aPageSize) throws Exception {
         return appService.getJiyoujia(page, aPageSize);
