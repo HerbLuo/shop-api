@@ -125,7 +125,7 @@ public class AppServiceImpl implements IAppService {
         }
 
         // 极有家的内容
-        List<AppJiyoujiaEntity> jiyoujiaEntities = appJiyoujiaDao.getData(page * aPageSize, page * aPageSize + aPageSize);
+        List<AppJiyoujiaEntity> jiyoujiaEntities = appJiyoujiaDao.getData(page * aPageSize, aPageSize);
 
         return new PageImpl<>(jiyoujiaEntities, new PageRequest(page, aPageSize), count.longValue());
     }

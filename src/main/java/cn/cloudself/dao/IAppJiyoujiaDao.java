@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface IAppJiyoujiaDao extends Repository<AppJiyoujiaEntity, Integer> {
 
-    List<AppJiyoujiaEntity> getData(int startFrom, int endWith);
+    List<AppJiyoujiaEntity> getData(int startFrom, int size);
 
     IntegerEntity maxCount();
 
