@@ -2,6 +2,7 @@ package cn.cloudself.service;
 
 import cn.cloudself.bean.EntitysWithVersion;
 import cn.cloudself.model.*;
+import org.springframework.data.domain.Page;
 
 /**
  * @author HerbLuo
@@ -43,5 +44,13 @@ public interface IAppService {
      * @return .
      */
     Iterable<AppRushbuyEntity> getRushbuy() throws Exception;
+
+    /**
+     * 获取极有家的内容
+     *
+     * @param page 从0开始计
+     * @return .
+     */
+    Page<AppJiyoujiaEntity> getJiyoujia(Integer page, Integer aPageSize) throws Exception;
 
 }

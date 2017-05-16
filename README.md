@@ -1,6 +1,6 @@
 # shop-api
 
-restful apis for shop-native, shop-ui.
+> restful apis for shop-native, shop-ui.
 
 ### Setup By Intellij IDEA
 

@@ -6,6 +6,9 @@ import cn.cloudself.dao.*;
 import cn.cloudself.model.*;
 import cn.cloudself.service.IAppService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,13 +36,16 @@ public class AppServiceImpl implements IAppService {
 
     private final IAppRushbuyDao appRushbuyDao;
 
+    private final IAppJiyoujiaDao appJiyoujiaDao;
+
     @Autowired
-    public AppServiceImpl(IAppDao appDao, IAppSliderDao appSliderDao, IAppEntranceDao appEntranceDao, IAppHotbarDao appHotbarDao, IAppRushbuyDao appRushbuyDao) {
+    public AppServiceImpl(IAppDao appDao, IAppSliderDao appSliderDao, IAppEntranceDao appEntranceDao, IAppHotbarDao appHotbarDao, IAppRushbuyDao appRushbuyDao, IAppJiyoujiaDao appJiyoujiaDao) {
         this.appDao = appDao;
         this.appSliderDao = appSliderDao;
         this.appEntranceDao = appEntranceDao;
         this.appHotbarDao = appHotbarDao;
         this.appRushbuyDao = appRushbuyDao;
+        this.appJiyoujiaDao = appJiyoujiaDao;
     }
 
     /**
@@ -95,16 +101,33 @@ public class AppServiceImpl implements IAppService {
         return appHotbarDao.findAll();
     }
 
-//    private EntityManager entityManager;
-//
-//    @PersistenceContext
-//    public void setEntityManager(EntityManager entityManager) {
-//        this.entityManager = entityManager;
-//    }
-
+    /**
+     * 获取抢购内容
+     */
     @Override
     public Iterable<AppRushbuyEntity> getRushbuy() throws Exception {
         return appRushbuyDao.getRushbuy();
+    }
+
+    /**
+     * 获取极有家的内容
+     *
+     * @param page start from 0
+     */
+    @Override
+    @ParamChecker(greaterOrEqual0 = 0, greaterThan0 = 1)
+    public Page<AppJiyoujiaEntity> getJiyoujia(Integer page, Integer aPageSize) throws Exception {
+
+        // 总页数
+        IntegerEntity count = appJiyoujiaDao.maxCount();
+        if (page >= Math.ceil(count.intValue() / aPageSize)) {
+            return new PageImpl<>(new ArrayList<>(), new PageRequest(page, aPageSize), count.longValue());
+        }
+
+        // 极有家的内容
+        List<AppJiyoujiaEntity> jiyoujiaEntities = appJiyoujiaDao.getData(page * aPageSize, page * aPageSize + aPageSize);
+
+        return new PageImpl<>(jiyoujiaEntities, new PageRequest(page, aPageSize), count.longValue());
     }
 
 }

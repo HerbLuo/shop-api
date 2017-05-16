@@ -17,22 +17,7 @@ import javax.persistence.*;
                 "UNION (SELECT * FROM app_rushbuy WHERE `index` = 2 LIMIT 2) " +
                 "UNION (SELECT * FROM app_rushbuy WHERE `index` = 3 LIMIT 2) " +
                 "UNION (SELECT * FROM app_rushbuy WHERE `index` = 4 LIMIT 2)",
-        resultSetMapping = "AppRushbuyEntity"
-)
-@SqlResultSetMapping(
-        name = "AppRushbuyEntity",
-        entities = {
-                @EntityResult(
-                        entityClass = AppRushbuyEntity.class,
-                        fields = {
-                                @FieldResult(name = "id", column = "id"),
-                                @FieldResult(name = "type", column = "type"),
-                                @FieldResult(name = "img", column = "img"),
-                                @FieldResult(name = "index", column = "index"),
-                                @FieldResult(name = "link", column = "link")
-                        }
-                )
-        }
+        resultClass = AppRushbuyEntity.class
 )
 public class AppRushbuyEntity {
     private int id;
