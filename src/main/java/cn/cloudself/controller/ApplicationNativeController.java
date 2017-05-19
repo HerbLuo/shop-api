@@ -62,7 +62,7 @@ public class ApplicationNativeController {
      * @param page start from 0
      */
     @RequestMapping(value = "/jiyoujia/page/{page}/apagesize/{aPageSize}/", method = RequestMethod.GET)
-    public Page<AppJiyoujiaEntity> getJiyoujia(@PathVariable("page") Integer page,
+    public AppBlockEntity getJiyoujia(@PathVariable("page") Integer page,
                                                @PathVariable("aPageSize") Integer aPageSize) throws Exception {
         return appService.getJiyoujia(page, aPageSize);
     }

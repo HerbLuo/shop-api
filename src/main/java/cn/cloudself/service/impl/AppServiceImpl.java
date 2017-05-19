@@ -3,12 +3,14 @@ package cn.cloudself.service.impl;
 import cn.cloudself.bean.EntitysWithVersion;
 import cn.cloudself.components.annotation.ParamChecker;
 import cn.cloudself.dao.*;
+import cn.cloudself.exception.http.ServerException;
 import cn.cloudself.model.*;
 import cn.cloudself.service.IAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,14 +40,20 @@ public class AppServiceImpl implements IAppService {
 
     private final IAppJiyoujiaDao appJiyoujiaDao;
 
+    private final IAppBlockDao appBlockDao;
+
+    private final IAppJiyoujiaHeadDao appJiyoujiaHeadDao;
+
     @Autowired
-    public AppServiceImpl(IAppDao appDao, IAppSliderDao appSliderDao, IAppEntranceDao appEntranceDao, IAppHotbarDao appHotbarDao, IAppRushbuyDao appRushbuyDao, IAppJiyoujiaDao appJiyoujiaDao) {
+    public AppServiceImpl(IAppDao appDao, IAppSliderDao appSliderDao, IAppEntranceDao appEntranceDao, IAppHotbarDao appHotbarDao, IAppRushbuyDao appRushbuyDao, IAppJiyoujiaDao appJiyoujiaDao, IAppBlockDao appBlockDao, IAppJiyoujiaHeadDao appJiyoujiaHeadDao) {
         this.appDao = appDao;
         this.appSliderDao = appSliderDao;
         this.appEntranceDao = appEntranceDao;
         this.appHotbarDao = appHotbarDao;
         this.appRushbuyDao = appRushbuyDao;
         this.appJiyoujiaDao = appJiyoujiaDao;
+        this.appBlockDao = appBlockDao;
+        this.appJiyoujiaHeadDao = appJiyoujiaHeadDao;
     }
 
     /**
@@ -116,18 +124,57 @@ public class AppServiceImpl implements IAppService {
      */
     @Override
     @ParamChecker(greaterOrEqual0 = 0, greaterThan0 = 1)
-    public Page<AppJiyoujiaEntity> getJiyoujia(Integer page, Integer aPageSize) throws Exception {
+    public AppBlockEntity getJiyoujia(Integer page, Integer aPageSize) throws Exception {
+
+        Pageable pageable = new PageRequest(page, aPageSize);
+
+        AppBlockEntity appBlockEntity = appBlockDao.findOneByNameEquals("jiyoujia");
+
+        // 创建 head page
+        Page<AppJiyoujiaHeadEntity> head = null;
+        switch (appBlockEntity.getColumnType()) {
+            case 2:
+                IntegerEntity count = appJiyoujiaHeadDao.maxCountOfDoubleColumn();
+
+                // 需查询的页数大于总页数，页数不足
+                if (page >= Math.ceil(count.doubleValue() / aPageSize)) {
+                    head = new PageImpl<>(new ArrayList<>(), pageable, count.intValue());
+                    break;
+                }
+
+                // 极有家的头
+                List<AppJiyoujiaHeadEntity> appJiyoujiaHeadEntities =
+                        appJiyoujiaHeadDao.getDoubleColumn(page * aPageSize, aPageSize);
+                head = new PageImpl<>(appJiyoujiaHeadEntities, pageable, count.intValue());
+                break;
+            default:
+                break;
+        }
+
+        if (head == null) {
+            throw new ServerException("逻辑错误");
+        }
+
+        // 创建 content page
+        Page<AppJiyoujiaEntity> content;
 
         // 总页数
         IntegerEntity count = appJiyoujiaDao.maxCount();
-        if (page >= Math.ceil(count.intValue() / aPageSize)) {
-            return new PageImpl<>(new ArrayList<>(), new PageRequest(page, aPageSize), count.longValue());
+
+        // 需查询的页数大于总页数，页数不足
+        if (page >= Math.ceil(count.doubleValue() / aPageSize)) {
+            content = new PageImpl<>(new ArrayList<>(), pageable, count.longValue());
+        } else {
+            // 极有家的内容
+            List<AppJiyoujiaEntity> jiyoujiaEntities = appJiyoujiaDao.getData(page * aPageSize, aPageSize);
+            content = new PageImpl<>(jiyoujiaEntities, new PageRequest(page, aPageSize), count.longValue());
         }
 
-        // 极有家的内容
-        List<AppJiyoujiaEntity> jiyoujiaEntities = appJiyoujiaDao.getData(page * aPageSize, aPageSize);
+        appBlockEntity.setHead(head);
+        appBlockEntity.setContent(content);
 
-        return new PageImpl<>(jiyoujiaEntities, new PageRequest(page, aPageSize), count.longValue());
+        return appBlockEntity;
+
     }
 
 }

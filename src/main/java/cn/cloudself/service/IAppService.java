@@ -2,7 +2,6 @@ package cn.cloudself.service;
 
 import cn.cloudself.bean.EntitysWithVersion;
 import cn.cloudself.model.*;
-import org.springframework.data.domain.Page;
 
 /**
  * @author HerbLuo
@@ -51,6 +50,6 @@ public interface IAppService {
      * @param page 从0开始计
      * @return .
      */
-    Page<AppJiyoujiaEntity> getJiyoujia(Integer page, Integer aPageSize) throws Exception;
+    AppBlockEntity getJiyoujia(Integer page, Integer aPageSize) throws Exception;
 
 }
