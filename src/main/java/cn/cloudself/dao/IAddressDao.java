@@ -9,6 +9,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface IAddressDao extends CrudRepository<AddressEntity, Integer> {
 
-    Iterable<AddressEntity> findTop5ByUserIdAndEnabledTrue(Integer id);
+    Iterable<AddressEntity> findTop10ByUserIdAndEnabledTrue(Integer id);
 
 }

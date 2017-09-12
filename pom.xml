@@ -192,6 +192,18 @@
             <version>${hibernate.version}</version>
         </dependency>
 
+        <!-- 使用SpringFox 构建Swagger Restful API 文档 -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
 
     </dependencies>
 

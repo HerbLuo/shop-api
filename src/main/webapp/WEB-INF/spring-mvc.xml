@@ -20,6 +20,7 @@
 
     <!-- 自动扫描并开启注解 -->
     <context:component-scan base-package="cn.cloudself"/>
+    <!-- Required to enable Spring post processing on @Configuration classes. -->
     <context:annotation-config/>
     <!-- 提供数据绑定（类型转换Object to String）支持 @NumberFormatannotation @DateTimeFormat @Valid @ResponseBody @RequestBody -->
     <mvc:annotation-driven/>
@@ -68,6 +69,10 @@
     <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
           p:configLocation="/WEB-INF/ehcache.xml"
           p:shared="true"/>
+
+    <!-- 使用 Swagger Restful API文档时，添加此注解 -->
+    <mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/"/>
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>
 
 
 </beans>

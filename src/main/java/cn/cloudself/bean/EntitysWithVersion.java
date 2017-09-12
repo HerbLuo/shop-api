@@ -11,14 +11,14 @@ package cn.cloudself.bean;
 public class EntitysWithVersion<T> {
 
     private String version;
-    private Iterable<T> entitys;
+    private Iterable<T> entity;
 
     public EntitysWithVersion() {
     }
 
-    public EntitysWithVersion(String version, Iterable<T> entitys) {
+    public EntitysWithVersion(String version, Iterable<T> entity) {
         this.version = version;
-        this.entitys = entitys;
+        this.entity = entity;
     }
 
     public String getVersion() {
@@ -29,38 +29,38 @@ public class EntitysWithVersion<T> {
         this.version = version;
     }
 
-    public Iterable<T> getEntitys() {
-        return entitys;
+    public Iterable<T> getEntity() {
+        return entity;
     }
 
-    public void setEntitys(Iterable<T> entitys) {
-        this.entitys = entitys;
+    public void setEntity(Iterable<T> entity) {
+        this.entity = entity;
     }
 
     @Override
     public String toString() {
         return "EntitysWithVersion{" +
                 "version='" + version + '\'' +
-                ", entitys=" + entitys +
+                ", entity=" + entity +
                 '}';
     }
 
     @Override
-    @SuppressWarnings("SimplifiableIfStatement")
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         EntitysWithVersion<?> that = (EntitysWithVersion<?>) o;
 
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
-        return entitys != null ? entitys.equals(that.entitys) : that.entitys == null;
+        if (version != null ? !version.equals(that.version) : that.version != null)
+            return false;
+        return entity != null ? entity.equals(that.entity) : that.entity == null;
     }
 
     @Override
     public int hashCode() {
         int result = version != null ? version.hashCode() : 0;
-        result = 31 * result + (entitys != null ? entitys.hashCode() : 0);
+        result = 31 * result + (entity != null ? entity.hashCode() : 0);
         return result;
     }
 }

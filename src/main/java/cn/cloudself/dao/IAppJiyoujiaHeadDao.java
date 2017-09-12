@@ -19,6 +19,10 @@ public interface IAppJiyoujiaHeadDao extends Repository<AppJiyoujiaHeadEntity, I
 
     List<AppJiyoujiaHeadEntity> getDoubleColumn(int start, int length);
 
+    /**
+     * Max of 各类型(type 放置于左边还是右边)的记录数
+     * 如：type为0的记录数有3个，type为1的记录数有4个，返回结果就为4
+     */
     IntegerEntity maxCountOfDoubleColumn();
 
     Page<AppJiyoujiaHeadEntity> findByType(byte type, Pageable pageable);

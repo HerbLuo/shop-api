@@ -3,6 +3,7 @@ package cn.cloudself.model;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author HerbLuo
@@ -20,6 +21,7 @@ public class AppEntity {
     private String versionName;
     private String androidDownloadUrl;
     private String appEntranceVersion;
+    private Iterable<AppComponentVersionEntity> appComponentVersion;
 
     @Id
     @Column(name = "id", nullable = false)
@@ -95,5 +97,14 @@ public class AppEntity {
         result = 31 * result + (androidDownloadUrl != null ? androidDownloadUrl.hashCode() : 0);
         result = 31 * result + (appEntranceVersion != null ? appEntranceVersion.hashCode() : 0);
         return result;
+    }
+
+    @Transient
+    public Iterable<AppComponentVersionEntity> getAppComponentVersion() {
+        return appComponentVersion;
+    }
+
+    public void setAppComponentVersion(Iterable<AppComponentVersionEntity> appComponentVersion) {
+        this.appComponentVersion = appComponentVersion;
     }
 }

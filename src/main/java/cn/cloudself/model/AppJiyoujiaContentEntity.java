@@ -14,15 +14,15 @@ import javax.persistence.*;
 @Table(name = "app_jiyoujia", schema = "shop")
 @NamedNativeQueries({
         @NamedNativeQuery(
-                name = "AppJiyoujiaEntity.getData",
+                name = "AppJiyoujiaContentEntity.getData",
                 query = "(SELECT * FROM app_jiyoujia WHERE `index` = 1 LIMIT ?1, ?2)" +
                         "UNION (SELECT * FROM app_jiyoujia WHERE `index` = 2 LIMIT ?1, ?2)" +
                         "UNION (SELECT * FROM app_jiyoujia WHERE `index` = 3 LIMIT ?1, ?2)" +
                         "UNION (SELECT * FROM app_jiyoujia WHERE `index` = 4 LIMIT ?1, ?2)",
-                resultClass = AppJiyoujiaEntity.class
+                resultClass = AppJiyoujiaContentEntity.class
         ),
         @NamedNativeQuery(
-                name = "AppJiyoujiaEntity.maxCount",
+                name = "AppJiyoujiaContentEntity.maxCount",
                 query = "SELECT MAX(`group_count`) AS `id` FROM (" +
                         "(SELECT COUNT(*) AS `group_count` FROM app_jiyoujia WHERE `index` = 1)" +
                         "UNION(SELECT COUNT(*) FROM app_jiyoujia WHERE `index` = 2)" +
@@ -32,7 +32,7 @@ import javax.persistence.*;
                 resultClass = IntegerEntity.class
         )
 })
-public class AppJiyoujiaEntity {
+public class AppJiyoujiaContentEntity {
     private int id;
     private Byte index;
     private String img;
@@ -83,7 +83,7 @@ public class AppJiyoujiaEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AppJiyoujiaEntity that = (AppJiyoujiaEntity) o;
+        AppJiyoujiaContentEntity that = (AppJiyoujiaContentEntity) o;
 
         if (id != that.id) return false;
         if (index != null ? !index.equals(that.index) : that.index != null) return false;

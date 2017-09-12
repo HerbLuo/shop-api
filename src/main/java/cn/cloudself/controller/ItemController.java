@@ -20,12 +20,10 @@ import java.util.List;
 public class ItemController {
 
     private final IItemService itemService;
-    private final Logger logger;
 
     @Autowired
-    public ItemController(IItemService itemService, Logger logger) {
+    public ItemController(IItemService itemService) {
         this.itemService = itemService;
-        this.logger = logger;
     }
 
     /**
@@ -80,6 +78,8 @@ public class ItemController {
 //        Thread.sleep(3000);
         return itemService.getItemsByIds(Arrays.asList(itemIds));
     }
+
+
 
     /**
      * 得到商品评论

@@ -24,12 +24,10 @@ public class AddressServiceImpl implements IAddressService {
 
     /**
      * 根据用户id找出对应的收货地址
-     *
-     * @param id
      */
     @Override
     public Iterable<AddressEntity> getAddressByUserId(Integer id) throws Exception {
-        return addressDao.findTop5ByUserIdAndEnabledTrue(id);
+        return addressDao.findTop10ByUserIdAndEnabledTrue(id);
     }
 
 }

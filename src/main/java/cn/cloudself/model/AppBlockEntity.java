@@ -1,5 +1,7 @@
 package cn.cloudself.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.domain.Page;
 
 import javax.persistence.*;
@@ -13,14 +15,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "app_block", schema = "shop")
-public class AppBlockEntity {
+@ApiModel
+public class AppBlockEntity<H, C> {
     private int id;
     private String name;
     private String title;
     private byte columnType;
 
-    private Page<AppJiyoujiaHeadEntity> head;
-    private Page<AppJiyoujiaEntity> content;
+    private Page<H> head;
+    private Page<C> content;
 
     @Id
     @Column(name = "id")
@@ -76,6 +79,7 @@ public class AppBlockEntity {
 
     @Basic
     @Column(name = "columnType")
+    @ApiModelProperty("标志着数据的类型，（UI布局的类型）暂时没什么用")
     public byte getColumnType() {
         return columnType;
     }
@@ -85,20 +89,20 @@ public class AppBlockEntity {
     }
 
     @Transient
-    public Page<AppJiyoujiaHeadEntity> getHead() {
+    public Page<H> getHead() {
         return head;
     }
 
-    public void setHead(Page<AppJiyoujiaHeadEntity> head) {
+    public void setHead(Page<H> head) {
         this.head = head;
     }
 
     @Transient
-    public Page<AppJiyoujiaEntity> getContent() {
+    public Page<C> getContent() {
         return content;
     }
 
-    public void setContent(Page<AppJiyoujiaEntity> content) {
+    public void setContent(Page<C> content) {
         this.content = content;
     }
 }

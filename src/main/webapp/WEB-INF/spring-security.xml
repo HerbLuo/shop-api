@@ -140,8 +140,9 @@
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
         <property name="tokenStore" ref="tokenStore"/>
         <property name="supportRefreshToken" value="true"/>
-        <property name="accessTokenValiditySeconds" value="60"/><!-- token有效期，单位秒，开发时设置为1分钟，发布后可将其增加为10分钟以上 -->
-        <property name="refreshTokenValiditySeconds" value="604800"/><!-- 7天 -->
+        <property name="accessTokenValiditySeconds" value="30"/><!-- token有效期，单位秒，开发时设置为1分钟，发布后可将其增加为10分钟以上 -->
+        <property name="refreshTokenValiditySeconds" value="2592000"/><!-- 7天 --><!-- 单位 秒 --><!-- 2592000 30天 -->
+        <!--<property name="refreshTokenValiditySeconds" value="604800"/>&lt;!&ndash; 7天 &ndash;&gt;-->
         <property name="clientDetailsService" ref="clientDetails"/>
     </bean>
     <!-- 预定义的token store，这些token现在存储在内存里， 我们可以在此自定义它。如果使用jdbc， 注意导入依赖spring jdbc-->

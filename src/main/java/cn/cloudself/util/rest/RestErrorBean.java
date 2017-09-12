@@ -4,6 +4,7 @@ package cn.cloudself.util.rest;
  * @author HerbLuo
  * @version 1.0.0.d
  */
+@SuppressWarnings("unused")
 public class RestErrorBean {
 
     private int status;

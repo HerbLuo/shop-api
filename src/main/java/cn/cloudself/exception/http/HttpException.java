@@ -6,7 +6,7 @@ import java.security.PrivilegedActionException;
  * @author HerbLuo
  * @version 1.0.0.d
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class HttpException extends Exception {
 
     private int code;

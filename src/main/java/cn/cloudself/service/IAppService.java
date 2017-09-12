@@ -42,7 +42,7 @@ public interface IAppService {
      * 获取抢购内容
      * @return .
      */
-    Iterable<AppRushbuyEntity> getRushbuy() throws Exception;
+    AppBlockEntity<?, AppRushbuyContentEntity> getRushbuy(Integer page, Integer aPageSize) throws Exception;
 
     /**
      * 获取极有家的内容
@@ -50,6 +50,7 @@ public interface IAppService {
      * @param page 从0开始计
      * @return .
      */
-    AppBlockEntity getJiyoujia(Integer page, Integer aPageSize) throws Exception;
+    AppBlockEntity<AppJiyoujiaHeadEntity, AppJiyoujiaContentEntity> getJiyoujia(Integer page, Integer aPageSize)
+            throws Exception;
 
 }
