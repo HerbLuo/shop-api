@@ -1,7 +1,5 @@
 package cn.cloudself.exception.http;
 
-import java.security.PrivilegedActionException;
-
 /**
  * @author HerbLuo
  * @version 1.0.0.d

@@ -52,5 +52,4 @@ public interface IItemService {
      */
     List<ItemCommentEntity> getComment(Integer itemId, Integer aPageSize, Integer page);
 
-
 }
